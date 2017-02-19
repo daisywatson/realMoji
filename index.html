@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Our Project</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron">
+				<h2>
+					Upload a photo
+				</h2>
+				<p>
+					Upload a photo from your computer or take one with your webcam.
+				</p>
+				<p>
+				<!--	<a class="btn btn-primary btn-large" href="#">Upload</a> -->
+                <!-- The file upload form used as target for the file upload widget -->
+                <form id="fileupload" action="../server/php/" method="POST" enctype="multipart/form-data">
+                    <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                   <div class="row fileupload-buttonbar">
+                        <div class="col-lg-7">
+                            <!-- The fileinput-button span is used to style the file input field as button -->
+                            <span class="btn  fileinput-button">
+                            <i class="icon-plus icon-white"></i>
+                                <span></span>
+                                <input type="file" name="files[]" multiple>
+                            </span>
+                            <a href = "webcam-page.html" class = "btn btn-primary start"
+                            role = "button">Camera</a>
+                            <button type="submit" class="btn btn-warning start">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Upload</span>
+                            </button>
+
+                            <!-- The global file processing state -->
+                            <span class="fileupload-process"></span>
+                        </div>
+                        <!-- The global progress state -->
+                        <div class="col-lg-5 fileupload-progress">
+                            <!-- The global progress bar -->
+                            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                            </div>
+                            <!-- The extended global progress state -->
+                            <div class="progress-extended">&nbsp;</div>
+                        </div>
+                    </div>
+                    <!-- The table listing the files available for upload/download -->
+                    <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+                </form>
+            </div>
+            <!-- The template to display files available for upload -->
+            <script id="template-upload" type="text/x-tmpl">
+            {% for (var i=0, file; file=o.files[i]; i++) { %}
+                <tr class="template-upload">
+                    <td>
+                        <span class="preview"></span>
+                    </td>
+                    <td>
+                        <p class="name">{%=file.name%}</p>
+                        <strong class="error text-danger"></strong>
+                    </td>
+                    <td>
+                        <p class="size">Processing...</p>
+                        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+                    </td>
+                    <td>
+                        {% if (!i && !o.options.autoUpload) { %}
+                            <button class="btn btn-primary start" disabled>
+                                <i class="glyphicon glyphicon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        {% } %}
+                        {% if (!i) { %}
+                            <button class="btn btn-warning cancel">
+                                <i class="glyphicon glyphicon-ban-circle"></i>
+                                <span>Cancel</span>
+                            </button>
+                        {% } %}
+                    </td>
+                </tr>
+            {% } %}
+            </script>
+            <!-- The template to display files available for download -->
+            <script id="template-download" type="text/x-tmpl">
+            {% for (var i=0, file; file=o.files[i]; i++) { %}
+                <tr class="template-download">
+                    <td>
+                        <span class="preview">
+                            {% if (file.thumbnailUrl) { %}
+                                <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                            {% } %}
+                        </span>
+                    </td>
+                    <td>
+                        <p class="name">
+                            {% if (file.url) { %}
+                                <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                            {% } else { %}
+                                <span>{%=file.name%}</span>
+                            {% } %}
+                        </p>
+                        {% if (file.error) { %}
+                            <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                        {% } %}
+                    </td>
+                    <td>
+                        <span class="size">{%=o.formatFileSize(file.size)%}</span>
+                    </td>
+                    <td>
+                        {% if (file.deleteUrl) { %}
+                            <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                                <i class="glyphicon glyphicon-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                            <input type="checkbox" name="delete" value="1" class="toggle">
+                        {% } else { %}
+                            <button class="btn btn-warning cancel">
+                                <i class="glyphicon glyphicon-ban-circle"></i>
+                                <span>Cancel</span>
+                            </button>
+                        {% } %}
+                    </td>
+                </tr>
+            {% } %}
+            </script>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <script src="../js/vendor/jquery.ui.widget.js"></script>
+            <script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+            <script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+            <script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+            <script src="../js/jquery.iframe-transport.js"></script>
+            <script src="../js/jquery.fileupload.js"></script>
+            <script>
+            /* global window, $ */
+            window.testBasicWidget = $.blueimp.fileupload;
+            </script>
+            <script src="../js/jquery.fileupload-process.js"></script>
+            <script src="../js/jquery.fileupload-image.js"></script>
+            <script src="../js/jquery.fileupload-audio.js"></script>
+            <script src="../js/jquery.fileupload-video.js"></script>
+            <script src="../js/jquery.fileupload-validate.js"></script>
+            <script src="../js/jquery.fileupload-ui.js"></script>
+            <script>
+            /* global window, $ */
+            window.testUIWidget = $.blueimp.fileupload;
+            </script>
+            <script src="//code.jquery.com/qunit/qunit-1.15.0.js"></script>
+            <script src="js/upload.js"></script>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+  <script src = "js/jquery.webcam.js" type = "text/javascript"></script>
+
+  </body>
+</html>
